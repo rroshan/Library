@@ -35,4 +35,14 @@
     <servlet-name>AddBorrowerServlet</servlet-name>
     <url-pattern>/addBorrower</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Checkout Book</display-name>
+    <servlet-name>CheckoutBooksServlet</servlet-name>
+    <servlet-class>com.library.servlets.CheckoutBooksServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CheckoutBooksServlet</servlet-name>
+    <url-pattern>/checkoutBooks</url-pattern>
+  </servlet-mapping>
 </web-app>

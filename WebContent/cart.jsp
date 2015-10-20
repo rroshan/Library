@@ -47,14 +47,14 @@ body.padding2 {
 	        
 	        book = JSON.parse(val);
 	        
-	        row = '<tr></tr><td class="col-sm-8 col-md-6"><div class="media"> <a class="thumbnail pull-left"><img class="media-object" src="' + book.cover + '"/></a> <div class="media-body"><h4 class="media-heading">' + book.title + '</h4><h5 class="media-heading"> by ' + book.authors + '</h5><h5 class="media-heading">' + book.isbn + '</h5></div></div></td>';
+	        row = '<tr></tr><td class="col-sm-8 col-md-6"><div class="media"> <a class="thumbnail pull-left"><img class="media-object" src="' + book.cover + '"/></a> <div class="media-body"><h4 class="media-heading">' + book.title + '</h4><h5 class="media-heading"> by ' + book.authors + '</h5><h5 class="media-heading">ISBN: ' + book.isbn + '</h5></div></div></td>';
 	        row = row + '<td class="col-sm-1 col-md-1 text-center"><strong>'+ book.branchId +'</strong></td>';
 	        row = row + '<td class="col-sm-1 col-md-1"> <button type="button" class="btn btn-danger" id="btn_' + book.isbn + '" onclick="deleteCartItem(this)"> <span class="glyphicon glyphicon-remove"></span> Remove </button></td></tr>';
 	        
 	        table.append(row);
 	    }
 		
-		row = '<tr><td> Borrower Card No: <input type="text" name="card_no" id="card_no"></td>   <td> <button type="button" class="btn btn-default" onclick="return morebooks_onclick()"> <span class="glyphicon glyphicon-shopping-cart"></span> Add More Books </button></td><td> <button type="button" class="btn btn-success"> Checkout <span class="glyphicon glyphicon-play"></span> </button></td></tr>';
+		row = '<tr><td> Borrower Card No: <input type="text" name="card_no" id="card_no"></td>   <td> <button type="button" class="btn btn-default" onclick="return morebooks_onclick()"> <span class="glyphicon glyphicon-shopping-cart"></span> Add More Books </button></td><td> <button type="button" class="btn btn-success" onclick="checkout()"> Checkout <span class="glyphicon glyphicon-play"></span> </button></td></tr>';
 		table.append(row);
 	}
 	
@@ -70,6 +70,36 @@ body.padding2 {
 	
 	function morebooks_onclick() {
 		window.location.href = "http://localhost:8080/Library/list_of_books.jsp";
+	}
+	
+	function checkout() {
+		var borrower_id=$("#card_no").val();
+		
+		if(borrower_id.length != 6) {
+			alert("Please enter a valid 6 digit card number");
+			return false;
+		}
+		
+		//get all session storage json
+		var cartArr = [];
+		for (i=0; i<=sessionStorage.length-1; i++)  
+	    {
+	        key = sessionStorage.key(i);  
+	        val = sessionStorage.getItem(key);
+	        
+	        cartArr[i] = val;
+	    }
+		
+		console.log(JSON.stringify(cartArr))
+		
+		 $.post('checkoutBooks', {"data":JSON.stringify(cartArr), "borrowerId":borrower_id},
+				 function(resp) {
+			 		alert("success");
+		 })
+		 .fail(function() {
+				alert("Failed to insert comment");
+		 });
+		
 	}
 </script>
 <link href="css/bootstrap.min.css" rel="stylesheet">
