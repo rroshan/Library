@@ -30,19 +30,20 @@ public class SearchBookBean {
 		this.author = author;
 	}
 
-	public ArrayList<SearchBookResultBean> searchBooks() {
-		SearchBookDAO searchBookDAO = new SearchBookDAOMySQLImpl();
+	public ArrayList<SearchBookResultBean> searchBooks(SearchBookDAO searchBookDAO, int offset, int noOfRecords) {
+		
+		System.out.println("Offset:"+offset);
+		System.out.println("noOfRecords:"+noOfRecords);
 
 		if(this.isbn.isEmpty()) {
 			if(!this.title.isEmpty()) {
-				return searchBookDAO.searchBooksByTitle(this.title);
+				return searchBookDAO.searchBooksByTitle(this.title, offset, noOfRecords);
 			}
 			else if (this.title.isEmpty() && !this.author.isEmpty()) {
-				return searchBookDAO.searchBooksByAuthor(this.author);
+				return searchBookDAO.searchBooksByAuthor(this.author, offset, noOfRecords);
 			}
 		}
-
 		//search with book
-		return searchBookDAO.searchBooksByISBN(this.isbn);
+		return searchBookDAO.searchBooksByISBN(this.isbn, offset, noOfRecords);
 	}
 }

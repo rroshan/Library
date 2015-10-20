@@ -63,7 +63,7 @@ public class CheckoutBooksServlet extends HttpServlet {
 		JSONArray array = (JSONArray)obj;
 
 		CheckoutBookDAO checkoutBookDAO = new CheckoutBookDAOMySQLImpl();
-		boolean canCheckOut = checkoutBookDAO.validateBorrower(borrowerId);
+		boolean canCheckOut = checkoutBookDAO.validateBorrower(Integer.parseInt(borrowerId));
 
 		if(!canCheckOut) {
 			message = "{\"message\": \"User already has 3 books on Loan\"}";
@@ -85,7 +85,7 @@ public class CheckoutBooksServlet extends HttpServlet {
 					response.getWriter().write(message);
 					return;
 				} else {
-					checkoutBookDAO.checkoutBook(bookObj.get("isbn").toString(), borrowerId, Integer.parseInt(bookObj.get("branchId").toString()));
+					checkoutBookDAO.checkoutBook(bookObj.get("isbn").toString(), Integer.parseInt(borrowerId), Integer.parseInt(bookObj.get("branchId").toString()));
 				}
 				
 				available = false;

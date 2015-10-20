@@ -104,7 +104,7 @@ body.padding2 {
 	<div class="row">
 		<div class="col-lg-6">
 			<div class="well bs-component">
-				<form class="form-horizontal" action="searchBook" method="post"
+				<form class="form-horizontal" action="searchBook" method="get"
 					onsubmit="return ValidationSearch()">
 					<fieldset>
 
@@ -128,8 +128,7 @@ body.padding2 {
 						</div>
 
 						<div class="form-group">
-							<label for="author" class="col-lg-2 control-label">Book
-								Author</label>
+							<label for="author" class="col-lg-2 control-label">Book Author</label>
 							<div class="col-lg-10">
 								<input type="text" class="form-control" id="author"
 									name="author" placeholder="Book Author"
@@ -184,6 +183,32 @@ body.padding2 {
 					</tr>
 				</c:forEach>
 			</table>
+			<div id="source-button" class="btn btn-primary btn-xs"
+				style="display: none;">&lt; &gt;</div>
+		</div>
+
+		<div class="bs-component" align="center">
+			<ul class="pagination pagination-lg">
+    			<c:if test="${currentPage > 1}">
+    				<li><a href="searchBook?page=${currentPage - 1}&isbn=${searchQuery.isbn }&title=${searchQuery.title }&author=${searchQuery.author }">«</a></li>
+    			</c:if>
+    			
+				<c:forEach begin="1" end="${noOfPages}" var="i">
+                	<c:choose>
+                    	<c:when test="${currentPage eq i}">
+                        	<li class="active"><a href="#">${i}</a></li>
+                    	</c:when>
+                    	<c:otherwise>
+                        	<li><a href="searchBook?page=${i}&isbn=${searchQuery.isbn }&title=${searchQuery.title }&author=${searchQuery.author }">${i}</a></li>
+                    	</c:otherwise>
+                	</c:choose>
+            	</c:forEach>
+            	
+				<c:if test="${currentPage lt noOfPages}">
+        			<li><a href="searchBook?page=${currentPage + 1}&isbn=${searchQuery.isbn }&title=${searchQuery.title }&author=${searchQuery.author }">»</a></li>
+    			</c:if>
+
+			</ul>
 			<div id="source-button" class="btn btn-primary btn-xs"
 				style="display: none;">&lt; &gt;</div>
 		</div>

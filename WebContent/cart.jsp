@@ -99,7 +99,6 @@ body.padding2 {
 		 .fail(function() {
 				alert("Failed to insert comment");
 		 });
-		
 	}
 </script>
 <link href="css/bootstrap.min.css" rel="stylesheet">

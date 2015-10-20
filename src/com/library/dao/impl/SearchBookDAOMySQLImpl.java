@@ -17,59 +17,10 @@ public class SearchBookDAOMySQLImpl implements SearchBookDAO {
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet set;
-
-	private ArrayList<String> getBookIDFromTitle(String title) {
-		ArrayList<String> book_ids = new ArrayList<String>();
-		conn = ConnectionFactory.getConnection();
-
-		try {
-			String sql = "SELECT book_id from book where lower(title) like lower(?)";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%"+title+"%");
-
-			set = pstmt.executeQuery();
-
-			while(set.next()) {
-				book_ids.add(set.getString(1));
-			}
-		} catch(SQLException sqlex) {
-			sqlex.printStackTrace();
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			ConnectionFactory.closeResources(set, pstmt, conn);
-		}
-
-		return book_ids;
-	}
-
-	private ArrayList<String> getBookIDFromAuthor(String author) {
-		ArrayList<String> book_ids = new ArrayList<String>();
-		conn = ConnectionFactory.getConnection();
-
-		try {
-			String sql = "SELECT book_id from book_authors where lower(author_name) like lower(?)";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%"+author+"%");
-
-			set = pstmt.executeQuery();
-
-			while(set.next()) {
-				book_ids.add(set.getString(1));
-			}
-		} catch(SQLException sqlex) {
-			sqlex.printStackTrace();
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			ConnectionFactory.closeResources(set, pstmt, conn);
-		}
-
-		return book_ids;
-	}	
+	private int noOfRecords;
 
 	@Override
-	public ArrayList<SearchBookResultBean> searchBooksByISBN(String isbn) {
+	public ArrayList<SearchBookResultBean> searchBooksByISBN(String isbn, int offset, int noOfRecords) {
 		ArrayList<SearchBookResultBean> arrSearchResults = new ArrayList<SearchBookResultBean>();
 		SearchBookResultBean searchResult;
 
@@ -78,7 +29,7 @@ public class SearchBookDAOMySQLImpl implements SearchBookDAO {
 		conn = ConnectionFactory.getConnection();
 
 		try {
-			String sql = "SELECT s.book_id, s.title, s.branch_id, s.no_of_copies, s.remaining_books, a.authors, s.cover FROM (SELECT book_id, GROUP_CONCAT(author_name SEPARATOR ',') AS authors FROM book_authors GROUP BY book_id) a, search_vw s WHERE s.book_id = ? AND s.book_id = a.book_id";
+			String sql = "SELECT SQL_CALC_FOUND_ROWS s.book_id, s.title, s.branch_id, s.no_of_copies, s.remaining_books, a.authors, s.cover FROM (SELECT book_id, GROUP_CONCAT(author_name SEPARATOR ',') AS authors FROM book_authors GROUP BY book_id) a, search_vw s WHERE s.book_id = ? AND s.book_id = a.book_id order by s.book_id limit " + offset + ", " + noOfRecords;
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, isbn);
 
@@ -98,12 +49,16 @@ public class SearchBookDAOMySQLImpl implements SearchBookDAO {
 				searchResult.setBranchId(set.getInt(3));
 				searchResult.setNoOfCopiesBranch(set.getInt(4));
 				searchResult.setAvailableCopiesBranch(set.getInt(5));
-				
-
-
 
 				arrSearchResults.add(searchResult);
 			}
+			
+			set.close();
+
+			set = pstmt.executeQuery("SELECT FOUND_ROWS()");
+			if(set.next())
+				this.noOfRecords = set.getInt(1);
+			
 		} catch(SQLException sqlex) {
 			sqlex.printStackTrace();
 		} catch(Exception ex) {
@@ -116,46 +71,110 @@ public class SearchBookDAOMySQLImpl implements SearchBookDAO {
 	}
 
 	@Override
-	public ArrayList<SearchBookResultBean> searchBooksByTitle(String title) {
-		// TODO Auto-generated method stub
-		ArrayList<String> book_ids = getBookIDFromTitle(title);
-		ArrayList<SearchBookResultBean> arrResult = new ArrayList<SearchBookResultBean>();
-		ArrayList<SearchBookResultBean> arrSubResult = new ArrayList<SearchBookResultBean>();
+	public ArrayList<SearchBookResultBean> searchBooksByTitle(String title, int offset, int noOfRecords) {
+		ArrayList<SearchBookResultBean> arrSearchResults = new ArrayList<SearchBookResultBean>();
+		SearchBookResultBean searchResult;
 
-		Iterator<String> it = book_ids.iterator();
-		String book_id;
-		while(it.hasNext()) {
-			book_id = it.next();
+		//getting database connection from connection pool
+		//connection handled by tomcat
+		conn = ConnectionFactory.getConnection();
 
-			arrSubResult.clear();
+		try {
+			String sql = "SELECT SQL_CALC_FOUND_ROWS s.book_id, s.title, s.branch_id, s.no_of_copies, s.remaining_books, a.authors, s.cover FROM (SELECT book_id, GROUP_CONCAT(author_name SEPARATOR ',') AS authors FROM book_authors GROUP BY book_id) a, search_vw s WHERE s.book_id in (SELECT book_id from book where lower(title) like lower(?)) AND s.book_id = a.book_id order by s.book_id limit " + offset + ", " + noOfRecords;
 
-			arrSubResult = searchBooksByISBN(book_id);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+title+"%");
 
-			arrResult.addAll(arrSubResult);
+			set = pstmt.executeQuery();
+
+			while(set.next()){
+				//Retrieve by column name
+				Book book = new Book();
+				book.setIsbn(set.getString(1));
+				book.setTitle(set.getString(2));
+				book.setAuthors(set.getString(6));
+				book.setCover(set.getString(7));
+
+				searchResult = new SearchBookResultBean();
+				searchResult.setBook(book);
+
+				searchResult.setBranchId(set.getInt(3));
+				searchResult.setNoOfCopiesBranch(set.getInt(4));
+				searchResult.setAvailableCopiesBranch(set.getInt(5));
+
+				arrSearchResults.add(searchResult);
+			}
+
+			set.close();
+
+			set = pstmt.executeQuery("SELECT FOUND_ROWS()");
+			if(set.next())
+				this.noOfRecords = set.getInt(1);
+
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			ConnectionFactory.closeResources(set, pstmt, conn);
 		}
 
-		return arrResult;
+		return arrSearchResults;
 	}
 
 	@Override
-	public ArrayList<SearchBookResultBean> searchBooksByAuthor(String author) {
-		// TODO Auto-generated method stub
-		ArrayList<String> book_ids = getBookIDFromAuthor(author);
-		ArrayList<SearchBookResultBean> arrResult = new ArrayList<SearchBookResultBean>();
-		ArrayList<SearchBookResultBean> arrSubResult = new ArrayList<SearchBookResultBean>();
+	public ArrayList<SearchBookResultBean> searchBooksByAuthor(String author, int offset, int noOfRecords) {
+		ArrayList<SearchBookResultBean> arrSearchResults = new ArrayList<SearchBookResultBean>();
+		SearchBookResultBean searchResult;
 
-		Iterator<String> it = book_ids.iterator();
-		String book_id;
-		while(it.hasNext()) {
-			book_id = it.next();
+		//getting database connection from connection pool
+		//connection handled by tomcat
+		conn = ConnectionFactory.getConnection();
 
-			arrSubResult.clear();
+		try {
+			String sql = "SELECT SQL_CALC_FOUND_ROWS s.book_id, s.title, s.branch_id, s.no_of_copies, s.remaining_books, a.authors, s.cover FROM (SELECT book_id, GROUP_CONCAT(author_name SEPARATOR ',') AS authors FROM book_authors GROUP BY book_id) a, search_vw s WHERE s.book_id in (SELECT book_id from book_authors where lower(author_name) like lower(?)) AND s.book_id = a.book_id order by s.book_id limit " + offset + ", " + noOfRecords;
 
-			arrSubResult = searchBooksByISBN(book_id);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+author+"%");
 
-			arrResult.addAll(arrSubResult);
+			set = pstmt.executeQuery();
+
+			while(set.next()){
+				//Retrieve by column name
+				Book book = new Book();
+				book.setIsbn(set.getString(1));
+				book.setTitle(set.getString(2));
+				book.setAuthors(set.getString(6));
+				book.setCover(set.getString(7));
+
+				searchResult = new SearchBookResultBean();
+				searchResult.setBook(book);
+
+				searchResult.setBranchId(set.getInt(3));
+				searchResult.setNoOfCopiesBranch(set.getInt(4));
+				searchResult.setAvailableCopiesBranch(set.getInt(5));
+
+				arrSearchResults.add(searchResult);
+			}
+
+			set.close();
+
+			set = pstmt.executeQuery("SELECT FOUND_ROWS()");
+			if(set.next())
+				this.noOfRecords = set.getInt(1);
+
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			ConnectionFactory.closeResources(set, pstmt, conn);
 		}
 
-		return arrResult;
+		return arrSearchResults;
+	}
+
+	public int getNoOfRecords() {
+		return this.noOfRecords;
 	}
 }
