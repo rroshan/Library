@@ -10,5 +10,6 @@ public interface SearchBookDAO {
 	
 	public ArrayList<SearchBookResultBean> searchBooksByAuthor(String author, int offset, int noOfRecords);
 
+	public ArrayList<SearchBookResultBean> searchBooksByTitleAndAuthor(String author, String title, int offset, int noOfRecords);
 	public int getNoOfRecords();
 }

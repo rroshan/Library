@@ -32,7 +32,10 @@ public class SearchBookBean {
 
 	public ArrayList<SearchBookResultBean> searchBooks(SearchBookDAO searchBookDAO, int offset, int noOfRecords) {
 		if(this.isbn.isEmpty()) {
-			if(!this.title.isEmpty()) {
+			if (!this.title.isEmpty() && !this.author.isEmpty()) {
+				return searchBookDAO.searchBooksByTitleAndAuthor(this.author, this.title, offset, noOfRecords);
+			}
+			else if(!this.title.isEmpty()) {
 				return searchBookDAO.searchBooksByTitle(this.title, offset, noOfRecords);
 			}
 			else if (this.title.isEmpty() && !this.author.isEmpty()) {
