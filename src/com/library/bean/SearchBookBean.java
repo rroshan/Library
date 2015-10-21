@@ -31,10 +31,6 @@ public class SearchBookBean {
 	}
 
 	public ArrayList<SearchBookResultBean> searchBooks(SearchBookDAO searchBookDAO, int offset, int noOfRecords) {
-		
-		System.out.println("Offset:"+offset);
-		System.out.println("noOfRecords:"+noOfRecords);
-
 		if(this.isbn.isEmpty()) {
 			if(!this.title.isEmpty()) {
 				return searchBookDAO.searchBooksByTitle(this.title, offset, noOfRecords);

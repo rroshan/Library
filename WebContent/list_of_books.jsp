@@ -114,7 +114,7 @@ body.padding2 {
 							<label for="isbn" class="col-lg-2 control-label">ISBN</label>
 							<div class="col-lg-10">
 								<input type="text" class="form-control" id="isbn" name="isbn"
-									placeholder="ISBN" value="${searchQuery.isbn }">
+									placeholder="ISBN 10-Digit" pattern="\d{10}" value="${searchQuery.isbn }">
 							</div>
 						</div>
 
