@@ -40,4 +40,43 @@ public class AddBorrowerDAOMySQLImpl implements AddBorrowerDAO {
 		}
 	}
 
+	@Override
+	public boolean checkBorrowerExists(Borrower b) {
+		// TODO Auto-generated method stub
+		int count = 0;
+		
+		conn = ConnectionFactory.getConnection();
+
+		try {
+			String sql = "select count(*) from borrower where lower(fname) = lower(?) and lower(lname) = lower(?) and lower(email) = lower(?) and lower(address) = lower(?) and lower(city) = lower(?) and lower(state) = lower(?) and lower(phone) = lower(?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, b.getFname());
+			pstmt.setString(2, b.getLname());
+			pstmt.setString(3, b.getEmail());
+			pstmt.setString(4, b.getAddress());
+			pstmt.setString(5, b.getCity());
+			pstmt.setString(6, b.getState());
+			pstmt.setString(7, b.getPhone());
+
+			set = pstmt.executeQuery();
+			
+			while(set.next()) {
+				count = set.getInt(1);
+			}
+			
+			if(count > 0) {
+				return false;
+			}
+			
+		} catch(SQLException sqlex) {
+			sqlex.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			ConnectionFactory.closeResources(set, pstmt, conn);
+		}
+		
+		return true;
+	}
+
 }

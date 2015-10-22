@@ -1,5 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=US-ASCII"
-	pageEncoding="US-ASCII"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -21,6 +23,52 @@ body.padding2 {
 </style>
 
 <script type="text/javascript" src="js/jquery.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		$("#borrower_form").submit(
+				function(e) {
+					e.preventDefault();
+					var self = this;
+
+					var fname = $("#inputFname").val();
+					var lname = $("#inputLname").val();
+					var email = $("#inputEmail").val();
+					var address = $("#inputStreetAddress").val();
+					var city = $("#inputCity").val();
+					var state = $("#inputState").val();
+					var phone = $("#inputPhone").val();
+
+					$.ajax({
+						type : "POST",
+						url : "addBorrower",
+						data : {
+							inputFname : fname,
+							inputLname : lname,
+							inputEmail : email,
+							inputStreetAddress : address,
+							inputCity : city,
+							inputState : state,
+							inputPhone : phone,
+							operation : "validation"
+						},
+						cache : false
+					}).done(
+							function(resp) {
+								if (resp.type === "Fail") {
+									$("#response_message").empty().append(
+											'<div class="alert alert-dismissible alert-danger">'
+													+ resp.message + '</div>');
+								} else if (resp.type === "Success") {
+									self.submit();
+								}
+							}).fail(function() {
+						alert('error');
+					});
+				});
+	});
+</script>
+
 <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="padding2">
@@ -58,7 +106,7 @@ body.padding2 {
 	<div class="row">
 		<div class="col-lg-6">
 			<div class="well bs-component">
-				<form class="form-horizontal" action="addBorrower" method="post">
+				<form class="form-horizontal" id="borrower_form" action="addBorrower" method="post">
 					<fieldset>
 						<legend>Enter Borrower Details</legend>
 						<div class="form-group">
@@ -120,7 +168,7 @@ body.padding2 {
 							<div class="col-lg-10">
 								<input type="text" class="form-control" id="inputPhone"
 									name="inputPhone" placeholder="(999) 999-9999"
-									pattern="(\d{3}) ?\d{3}-?\d{4}" required>
+									pattern="^\([0-9]{3}\)[0-9]{3}-[0-9]{4}$" required>
 							</div>
 						</div>
 
@@ -135,6 +183,16 @@ body.padding2 {
 				<div id="source-button" class="btn btn-primary btn-xs"
 					style="display: none;">&lt; &gt;</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
+		<div class="bs-component" id="response_message">
+		<c:if test="${not empty message}">
+			<div class="alert alert-dismissible alert-success">
+				${message }
+			</div>
+		</c:if>
 		</div>
 	</div>
 </body>

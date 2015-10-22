@@ -117,8 +117,6 @@ body.padding2 {
 			cartArr[i] = val;
 		}
 
-		console.log(JSON.stringify(cartArr))
-
 		$.post('checkoutBooks', {
 			"data" : JSON.stringify(cartArr),
 			"borrowerId" : borrower_id
