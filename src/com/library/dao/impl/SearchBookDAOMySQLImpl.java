@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import com.library.bean.SearchBookResultBean;
 import com.library.dao.SearchBookDAO;
 import com.library.dao.impl.ConnectionFactory;

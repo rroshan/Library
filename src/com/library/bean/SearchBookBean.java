@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.library.bean.SearchBookResultBean;
 import com.library.dao.SearchBookDAO;
-import com.library.dao.impl.SearchBookDAOMySQLImpl;
 
 public class SearchBookBean {
 	private String isbn;

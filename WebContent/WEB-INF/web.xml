@@ -45,4 +45,15 @@
     <servlet-name>CheckoutBooksServlet</servlet-name>
     <url-pattern>/checkoutBooks</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <description></description>
+    <display-name>Autocomplete</display-name>
+    <servlet-name>AutoCompleteServlet</servlet-name>
+    <servlet-class>com.library.servlets.AutoCompleteServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AutoCompleteServlet</servlet-name>
+    <url-pattern>/autoComplete</url-pattern>
+  </servlet-mapping>
 </web-app>
