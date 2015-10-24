@@ -34,14 +34,17 @@ public class SearchBookBean {
 			if (!this.title.isEmpty() && !this.author.isEmpty()) {
 				return searchBookDAO.searchBooksByTitleAndAuthor(this.author, this.title, offset, noOfRecords);
 			}
-			else if(!this.title.isEmpty()) {
+			else if(!this.title.isEmpty() && this.author.isEmpty()) {
 				return searchBookDAO.searchBooksByTitle(this.title, offset, noOfRecords);
 			}
 			else if (this.title.isEmpty() && !this.author.isEmpty()) {
 				return searchBookDAO.searchBooksByAuthor(this.author, offset, noOfRecords);
 			}
 		}
+		
 		//search with book
+		this.title = "";
+		this.author = "";
 		return searchBookDAO.searchBooksByISBN(this.isbn, offset, noOfRecords);
 	}
 }

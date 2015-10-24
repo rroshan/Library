@@ -14,9 +14,10 @@ public class AddBorrowerDAOMySQLImpl implements AddBorrowerDAO {
 	private ResultSet set;
 
 	@Override
-	public void insertBorrower(Borrower b) {
+	public int insertBorrower(Borrower b) {
 		// TODO Auto-generated method stub
 		conn = ConnectionFactory.getConnection();
+		int borrowerId = -1;
 
 		try {
 			String sql = "insert into borrower(fname, lname, email, address, city, state, phone) values (?,?,?,?,?,?,?)";
@@ -31,6 +32,21 @@ public class AddBorrowerDAOMySQLImpl implements AddBorrowerDAO {
 
 			pstmt.executeUpdate();
 			
+			sql = "select card_no from borrower where lower(fname) = lower(?) and lower(lname) = lower(?) and lower(address) = lower(?) and lower(city) = lower(?) and lower(state) = lower(?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, b.getFname());
+			pstmt.setString(2, b.getLname());
+			pstmt.setString(3, b.getAddress());
+			pstmt.setString(4, b.getCity());
+			pstmt.setString(5, b.getState());
+			
+			set = pstmt.executeQuery();
+			
+			while(set.next()) {
+				borrowerId = set.getInt(1);
+			}
+			
+			
 		} catch(SQLException sqlex) {
 			sqlex.printStackTrace();
 		} catch(Exception ex) {
@@ -38,6 +54,8 @@ public class AddBorrowerDAOMySQLImpl implements AddBorrowerDAO {
 		} finally {
 			ConnectionFactory.closeResources(set, pstmt, conn);
 		}
+		
+		return borrowerId;
 	}
 
 	@Override

@@ -29,37 +29,30 @@ public class CheckinBookBean {
 	}
 	
 	public ArrayList<CheckinBookResultBean> searchCheckin(CheckinBookDAO dao) {
-		int borrowerId;
-		String isbn = null;
-		String name = null;
-		
-		if(cardNo.isEmpty())
-		{
-			borrowerId = -1;
+		if(this.cardNo.isEmpty()) {
+			if(!this.name.isEmpty() && !this.isbn.isEmpty())
+			{
+				return dao.searchBookloansByNameAndISBN(this.name, this.isbn);
+			}
+			else if(this.name.isEmpty() && !this.isbn.isEmpty())
+			{
+				return dao.searchBookLoansByISBN(this.isbn);
+			}
+			else
+			{
+				return dao.searchBookLoansByName(this.name);
+			}
 		}
 		else
 		{
-			borrowerId = Integer.parseInt(cardNo);
+			if(this.isbn.isEmpty())
+			{
+				return dao.searchBookLoansByCardNo(Integer.parseInt(this.cardNo));
+			}
+			else
+			{
+				return dao.searchBookloansByCardNoAndISBN(Integer.parseInt(this.cardNo), this.isbn);
+			}
 		}
-		
-		if(this.isbn.isEmpty())
-		{
-			isbn = "#*#";
-		}
-		else
-		{
-			isbn = this.isbn;
-		}
-		
-		if(this.name.isEmpty())
-		{
-			name = "#*#";
-		}
-		else
-		{
-			name = this.name;
-		}
-		
-		return dao.searchBookLoans(borrowerId, name, isbn);
 	}
 }

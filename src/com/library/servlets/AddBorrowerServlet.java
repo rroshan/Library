@@ -91,8 +91,8 @@ public class AddBorrowerServlet extends HttpServlet {
 		}
 		else
 		{
-			addBorrowerDAO.insertBorrower(b);
-			request.setAttribute("message", "Borrower successfully created");
+			int borrowerId = addBorrowerDAO.insertBorrower(b);
+			request.setAttribute("message", "Borrower successfully created. Borrower ID:"+borrowerId);
 
 			RequestDispatcher rd = getServletContext().getRequestDispatcher("/create_borrower.jsp");
 			rd.forward(request, response);
