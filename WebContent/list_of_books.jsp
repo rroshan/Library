@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="com.library.bean.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -94,8 +95,12 @@ body.padding2 {
 		var title = $("#title").val();
 		var author = $("#author").val();
 		if (jQuery.trim(isbn).length == 0 && jQuery.trim(title).length == 0
-				&& jQuery.trim(author).length == 0)
+				&& jQuery.trim(author).length == 0) {
 			alert("Empty Search not allowed");
+			return false;
+		}
+		
+		return true;
 	}
 </script>
 <!-- Bootstrap core CSS -->
@@ -130,7 +135,7 @@ body.padding2 {
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
 						<li><a href="create_borrower.jsp">Create Borrower</a></li>
-						<li><a href="#">Check-in Book</a></li>
+						<li><a href="book_checkin.jsp">Check-in Book</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="cart.jsp">Go To Cart</a></li>
@@ -232,6 +237,7 @@ body.padding2 {
 
 		<div class="bs-component" align="center">
 			<ul class="pagination pagination-lg">
+			<c:if test="${fn:length(searchResult) gt 0 }">
 				<c:if test="${currentPage > 1}">
 					<li><a
 						href="searchBook?page=1&isbn=${searchQuery.isbn }&title=${searchQuery.title }&author=${searchQuery.author }">First</a></li>
@@ -283,7 +289,7 @@ body.padding2 {
 					<li><a
 						href="searchBook?page=${noOfPages}&isbn=${searchQuery.isbn }&title=${searchQuery.title }&author=${searchQuery.author }">Last</a></li>
 				</c:if>
-
+			</c:if>
 			</ul>
 			<div id="source-button" class="btn btn-primary btn-xs"
 				style="display: none;">&lt; &gt;</div>

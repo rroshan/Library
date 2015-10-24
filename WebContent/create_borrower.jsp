@@ -92,7 +92,7 @@ body.padding2 {
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
 						<li><a href="#">Create Borrower</a></li>
-						<li><a href="#">Check-in Book</a></li>
+						<li><a href="book_checkin.jsp">Check-in Book</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="cart.jsp">Go To Cart</a></li>

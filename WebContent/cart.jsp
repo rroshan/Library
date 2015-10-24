@@ -28,6 +28,16 @@ body.padding2 {
 	});
 
 	function populateCart() {
+		
+		var card_no;
+		if($("#card_no").length > 0) {
+			card_no = $("#card_no").val();
+		}
+		else
+		{
+			card_no = '';	
+		}
+		
 
 		$("#cart_table").empty().append(
 				'<table class="table table-hover"></table>');
@@ -63,15 +73,13 @@ body.padding2 {
 			table.append(row);
 		}
 
-		row = '<tr><td> Borrower Card No: <input type="text" name="card_no" id="card_no"></td>   <td> <button type="button" class="btn btn-default" onclick="return morebooks_onclick()"> <span class="glyphicon glyphicon-shopping-cart"></span> Add More Books </button></td><td> <button type="button" class="btn btn-success" onclick="checkout()"> Checkout <span class="glyphicon glyphicon-play"></span> </button></td></tr>';
+		row = '<tr><td> Borrower Card No: <input type="text" name="card_no" id="card_no" value="' + card_no + '"></td>   <td> <button type="button" class="btn btn-default" onclick="return morebooks_onclick()"> <span class="glyphicon glyphicon-shopping-cart"></span> Add More Books </button></td><td> <button type="button" class="btn btn-success" onclick="checkout()"> Checkout <span class="glyphicon glyphicon-play"></span> </button></td></tr>';
 		table.append(row);
 	}
 
 	function deleteCartItem(button) {
 		var button_id = button.id;
 		var isbn = button_id.substr(4);
-		console.log(button_id);
-		console.log(isbn);
 		sessionStorage.removeItem(isbn);
 
 		populateCart();
@@ -102,6 +110,11 @@ body.padding2 {
 
 	function checkout() {
 		var borrower_id = $("#card_no").val();
+		
+		if(sessionStorage.length < 1) {
+			alert("Cart is Empty. Cannot checkout");
+			return false;
+		}
 
 		if (borrower_id.length != 6) {
 			alert("Please enter a valid 6 digit card number");
@@ -150,7 +163,7 @@ body.padding2 {
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
 						<li><a href="create_borrower.jsp">Create Borrower</a></li>
-						<li><a href="#">Check-in Book</a></li>
+						<li><a href="book_checkin.jsp">Check-in Book</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="cart.jsp">Go To Cart</a></li>

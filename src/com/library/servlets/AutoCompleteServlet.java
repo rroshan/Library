@@ -51,6 +51,14 @@ public class AutoCompleteServlet extends HttpServlet {
 		{
 			results = dao.autoCompleteAuthor(term);
 		}
+		else if(type.equalsIgnoreCase("name"))
+		{
+			results = dao.autoCompleteName(term);
+		}
+		else if(type.equalsIgnoreCase("isbn"))
+		{
+			results = dao.autoCompleteIsbn(term);
+		}
 		
 		strResult = new Gson().toJson(results);
 		
