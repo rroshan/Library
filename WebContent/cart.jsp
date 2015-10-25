@@ -164,6 +164,7 @@ body.padding2 {
 					<ul class="nav navbar-nav">
 						<li><a href="create_borrower.jsp">Create Borrower</a></li>
 						<li><a href="book_checkin.jsp">Check-in Book</a></li>
+						<li><a href="fines.jsp">Fines</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="cart.jsp">Go To Cart</a></li>

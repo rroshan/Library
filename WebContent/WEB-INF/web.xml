@@ -65,4 +65,14 @@
     <servlet-name>CheckinServlet</servlet-name>
     <url-pattern>/checkinBook</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Calcfine</display-name>
+    <servlet-name>CalculateFineServlet</servlet-name>
+    <servlet-class>com.library.servlets.CalculateFineServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CalculateFineServlet</servlet-name>
+    <url-pattern>/calcFine</url-pattern>
+  </servlet-mapping>
 </web-app>
