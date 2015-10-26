@@ -169,7 +169,7 @@ body.padding2 {
 							<div class="col-lg-10">
 								<input type="text" class="form-control" id="inputPhone"
 									name="inputPhone" placeholder="(999) 999-9999"
-									pattern="^\([0-9]{3}\)[0-9]{3}-[0-9]{4}$" required>
+									pattern="^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$" required>
 							</div>
 						</div>
 

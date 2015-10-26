@@ -85,7 +85,7 @@ body.padding2 {
 		book.branchId = branchId;
 		book.cover = img;
 
-		sessionStorage.setItem(isbn, JSON.stringify(book));
+		sessionStorage.setItem(isbn+'_'+branchId, JSON.stringify(book));
 
 		alert("Successfully Added to Cart");
 	}

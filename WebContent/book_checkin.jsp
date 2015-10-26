@@ -161,7 +161,7 @@ body.padding2 {
 							<div class="col-lg-10">
 								<input type="text" class="form-control" id="borrower_id"
 									name="borrower_id" placeholder="Borrower ID"
-									value="${searchQuery.cardNo }">
+									value="${searchQuery.cardNo }" pattern="\d{1,}">
 							</div>
 						</div>
 

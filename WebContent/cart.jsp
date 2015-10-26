@@ -111,13 +111,13 @@ body.padding2 {
 	function checkout() {
 		var borrower_id = $("#card_no").val();
 		
+		if(!/^\d+$/.test(borrower_id)) {
+			 alert("Please enter only numbers in the Borrower ID field");
+			 return false;
+		}
+		
 		if(sessionStorage.length < 1) {
 			alert("Cart is Empty. Cannot checkout");
-			return false;
-		}
-
-		if (borrower_id.length != 6) {
-			alert("Please enter a valid 6 digit card number");
 			return false;
 		}
 
