@@ -67,7 +67,7 @@ body.padding2 {
 					+ book.branchId + '</strong></td>';
 			row = row
 					+ '<td class="col-sm-1 col-md-1"> <button type="button" class="btn btn-danger" id="btn_'
-					+ book.isbn
+					+ book.isbn + '_' + book.branchId 
 					+ '" onclick="deleteCartItem(this)"> <span class="glyphicon glyphicon-remove"></span> Remove </button></td></tr>';
 
 			table.append(row);
