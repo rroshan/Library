@@ -1,0 +1,88 @@
+select CONSTRAINT_NAME
+from INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+where TABLE_NAME = 'book_authors'
+
+
+ALTER TABLE book_authors ADD FOREIGN KEY (book_id) REFERENCES book(book_id)
+
+
+B = Foreach res_book_copies
+generate $1, $2, $3;
+
+
+
+
+grunt> B = Foreach res_book_copies
+>> generate $2, $3;
+grunt> dump B;
+
+
+
+scp -P 2222 ~/Documents/UTD/Fall\ 2015/Database/Programming\ Project\ 1/library_bdc/book_loans.csv root@127.0.0.1:/root/NYTimes/library_bdc
+hadoop fs -put /root/NYTimes/library_bdc/ /demo
+grunt> book = LOAD '/demo/library_bdc/books3.csv' AS (ISBN10:chararray, ISBN13:chararray, Title:chararray, Author:chararray, Cover:chararray, Publisher:chararray, Pages:int);
+grunt> book_copies = LOAD '/demo/library_bdc/book_copies.csv' AS (book_id:chararray, branch_id:int, no_of_copies:int);
+grunt> res_book_copies = JOIN book BY book_id, book_copies BY book_id;
+grunt> store .....
+
+hadoop fs -get /demo/library_bdc/output /root/NYTimes/library_bdc/
+
+scp -P 2222 root@127.0.0.1:/root/NYTimes/library_bdc/output/part-r-00000 ~/Documents/UTD/Fall\ 2015/Database/Programming\ Project\ 1/library_bdc/
+
+
+book = LOAD '/demo/library_bdc/isbn2.csv' AS (book_id:chararray);
+books = LOAD '/demo/library_bdc/books.csv' AS (isbn:chararray, title:chararray, author:chararray, year:chararray, publisher:chararray, image_url_s:chararray, image_url_m:chararray, image_url_l:chararray);
+books_unquote = foreach books generate REPLACE($0, '\\"', '') as (isbn:chararray), REPLACE($1, '\\"', '') as (title:chararray), REPLACE($2, '\\"', '') as (author:chararray), REPLACE($3, '\\"', '') as (year:chararray), REPLACE($4, '\\"', '') as (publisher:chararray), REPLACE($5, '\\"', '') as (image_url_s:chararray), REPLACE($6, '\\"', '') as (image_url_m:chararray), REPLACE($7, '\\"', '') as (image_url_l:chararray);
+book_images = JOIN book BY book_id, books_unquote BY isbn;
+
+
+Book title import processing
+book = LOAD '/demo/library_bdc/books3.csv' AS (ISBN10:chararray, ISBN13:chararray, Title:chararray, Author:chararray, Cover:chararray, Publisher:chararray, Pages:int);
+
+B = Foreach book
+generate $0, $2;
+
+store B into '/demo/library_bdc/output';
+
+
+Author import processing
+book = LOAD '/demo/library_bdc/books3.csv' AS (ISBN10:chararray, ISBN13:chararray, Title:chararray, Author:chararray, Cover:chararray, Publisher:chararray, Pages:int);
+
+B = Foreach book
+generate $0, $3;
+
+X = FOREACH B GENERATE ISBN10, FLATTEN(TOKENIZE(Author, ',')) as AUTHOR;
+
+store X into '/demo/library_bdc/output_author';
+
+
+Book Cover Processing
+book = LOAD '/demo/library_bdc/books3.csv' AS (ISBN10:chararray, ISBN13:chararray, Title:chararray, Author:chararray, Cover:chararray, Publisher:chararray, Pages:int);
+
+B = Foreach book
+generate $0, $4;
+
+store B into '/demo/library_bdc/output_cover';
+
+
+Book copies processing
+
+scp -r -P 2222 ~/Documents/UTD/Fall\ 2015/Database/Programming\ Project\ 1/Data/book_copies.csv root@127.0.0.1:/root/NYTimes/library_bdc/
+hadoop fs -put /root/NYTimes/library_bdc/book_copies.csv /demo/library_bdc/
+
+book = LOAD '/demo/library_bdc/books3.csv' AS (ISBN10:chararray, ISBN13:chararray, Title:chararray, Author:chararray, Cover:chararray, Publisher:chararray, Pages:int);
+book_copies = LOAD '/demo/library_bdc/book_copies.csv' AS (book_id:chararray, branch_id:int, no_of_copies:int);
+res_book_copies = JOIN book BY ISBN10, book_copies BY book_id;
+
+B = Foreach res_book_copies
+generate $7, $8, $9;
+
+store B into '/demo/library_bdc/output_copies';
+
+hadoop fs -get /demo/library_bdc/output_copies /root/NYTimes/library_bdc/
+
+scp -P 2222 root@127.0.0.1:/root/NYTimes/library_bdc/output_copies/part-r-00000 ~/Documents/UTD/Fall\ 2015/Database/Programming\ Project\ 1/library_bdc/
+
+
+
+loan = LOAD '/demo/library_bdc/book_loans.csv' AS (loan_id:int, book_id:chararray, branch_id:int, card_no:int, date_out:chararray, due_date:chararray, date_in:chararray);
